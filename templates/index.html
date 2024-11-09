@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* Reset and Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+        }
+
+        /* Navbar Styling */
+        nav {
+            background-color: #4CAF50;
+            padding: 10px 20px;
+        }
+
+        nav .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .navbar-container h1 {
+            color: white;
+        }
+
+        nav .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav .navbar-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Chatbox Container */
+        .chat-container {
+            width: 400px;
+            max-width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+        }
+
+        .chat-box {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .user-message {
+            text-align: right;
+            font-weight: bold;
+            background-color: #e1f5fe;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 75%;
+        }
+
+        .bot-response {
+            text-align: left;
+            color: #555;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 75%;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 60px);
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .chat-container {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="navbar-container">
+            <h1>AI Chatbot</h1>
+            <div class="navbar-links">
+                <a href="#">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chatbox -->
+    <div class="chat-container">
+        <h2>Chat with AI</h2>
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will be dynamically appended here -->
+        </div>
+        <input type="text" id="user-input" placeholder="Type a message" autofocus>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Function to append message to chat box
+        function appendMessage(message, sender) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender);
+            messageDiv.innerHTML = `<p>${message}</p>`;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        }
+
+        // Send message to backend and get response
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (!userInput) return;
+
+            // Append the user's message
+            appendMessage(userInput, 'user-message');
+
+            // Clear the input field
+            document.getElementById('user-input').value = '';
+
+            // Send the message to the backend (you'll need to adjust the endpoint)
+            const response = await fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_input=${userInput}`,
+            });
+
+            const data = await response.json();
+            const botResponse = data.response;
+
+            // Append the bot's response
+            appendMessage(botResponse, 'bot-response');
+        }
+    </script>
+</body>
+
+</html>
